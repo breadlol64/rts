@@ -2,7 +2,7 @@
 
 mkdir -p win
 cd win
-if [ -d "raylib-5.5_win64_mingw-w64." ]; then
+if [ -d "raylib-5.5_win64_mingw-w64.zip" ]; then
     wget https://github.com/raysan5/raylib/releases/download/5.5/raylib-5.5_win64_mingw-w64.zip
     unzip raylib-5.5_win64_mingw-w64.zip
 fi
