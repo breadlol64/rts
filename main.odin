@@ -6,26 +6,15 @@ import rl "vendor:raylib"
 
 tile_width :: 64
 tile_height :: 32
+world_size :: 250
 
 terrains: map[Terrain]rl.Texture2D
-
-Terrain :: enum {
-	Plains,
-	Water,
-	Sand,
-}
-
-Tile :: struct {
-	x:       int,
-	y:       int,
-	terrain: Terrain,
-}
 
 world: [dynamic]Tile
 camera: rl.Camera2D
 
 main :: proc() {
-	rl.InitWindow(1280, 720, "s")
+	rl.InitWindow(1280, 720, "aaa")
 	rl.SetTargetFPS(60)
 
 	camera = rl.Camera2D {
@@ -37,8 +26,8 @@ main :: proc() {
 
 	seed := rl.GetRandomValue(0, 2000000000)
 
-	for y in 0 ..= 50 {
-		for x in 0 ..= 50 {
+	for y in 0 ..= world_size {
+		for x in 0 ..= world_size {
 			t := Terrain.Plains
 			scale := 0.05
 			value := noise.noise_2d(i64(seed), {f64(x) * scale, f64(y) * scale})
@@ -73,23 +62,10 @@ main :: proc() {
 		rl.BeginMode2D(camera)
 		rl.ClearBackground(rl.DARKGRAY)
 
-		for tile in world {
-			texture, exists := terrains[tile.terrain]
-			if !exists {
-				// shouldnt be possible
-				fmt.println("terrain doesnt exist")
-				return
-			}
-
-			rl.DrawTexture(
-				texture,
-				i32((tile.x - tile.y) * (tile_width / 2)),
-				i32((tile.x + tile.y) * (tile_height / 2)),
-				rl.WHITE,
-			)
-		}
+		draw_tiles()
 
 		rl.EndMode2D()
+		rl.DrawText(fmt.ctprintf("fps: %d", rl.GetFPS()), 5, 5, 16, rl.RED)
 		rl.EndDrawing()
 	}
 }
