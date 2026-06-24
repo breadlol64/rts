@@ -1,0 +1,66 @@
+name: Build (Windows)
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build:
+    name: Compile Odin + Raylib (Windows)
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── Odin compiler ──────────────────────────────────────────────────────
+      - name: Install Odin
+        shell: pwsh
+        run: |
+          $version = "dev-2026-05"           # ← pin to a release tag, or use "latest"
+          $url     = "https://github.com/odin-lang/Odin/releases/download/$version/odin-windows-amd64-$version.zip"
+          Invoke-WebRequest $url -OutFile odin.zip
+          Expand-Archive odin.zip -DestinationPath C:\odin
+          echo "C:\odin" | Out-File -Append -FilePath $env:GITHUB_PATH
+
+      # ── Raylib (pre-built Windows libs shipped with Odin vendor) ──────────
+      # Odin's vendor/raylib already includes raylib.lib for Windows, so no
+      # separate Raylib download is needed when you use:
+      #   import rl "vendor:raylib"
+      # If you maintain your own raylib/ folder, replace this step with your
+      # preferred download / build step.
+
+      # ── LLVM (required by Odin on Windows) ────────────────────────────────
+      - name: Install LLVM
+        uses: KyleMayes/install-llvm-action@v2
+        with:
+          version: "17"
+
+      # ── Build ──────────────────────────────────────────────────────────────
+      - name: Build game
+        shell: pwsh
+        run: |
+          # Adjust the path and flags to match your project layout:
+          #   -file   → compile a single file
+          #   src/    → compile a whole package directory
+          #   -out    → output executable name
+          #   -o:speed → optimisation level (none / minimal / speed / aggressive)
+          odin build . `
+            -out:game.exe `
+            -o:speed `
+            -subsystem:windows
+
+      # ── Upload artifact ────────────────────────────────────────────────────
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: game-windows
+          path: |
+            game.exe
+            # Add any extra files your game needs at runtime, e.g.:
+            # assets/
+            # resources/
+          if-no-files-found: error
+          retention-days: 14
