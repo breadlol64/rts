@@ -1,15 +1,17 @@
+using static Globals;
+
 public class World
 {
     Tile[] world;
 
     public World()
     {
-        world = new Tile[100*100];
-        for (int y = 0; y < 100; y++)
+        world = new Tile[WorldSize*WorldSize];
+        for (int y = 0; y < WorldSize; y++)
         {
-            for (int x = 0; x < 100; x++)
+            for (int x = 0; x < WorldSize; x++)
             {
-                world[y * 100 + x] = new Tile(x, y, TerrainType.Plains);
+                world[y * WorldSize + x] = new Tile(x, y, TerrainType.Plains);
             }
         }
     }
