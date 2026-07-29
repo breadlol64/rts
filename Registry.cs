@@ -9,7 +9,9 @@ public static class Registry
     {
         var terrainDict = new Dictionary<TerrainType, Texture2D>
         {
-            { TerrainType.Plains, Raylib.LoadTexture("assets/tiles/plains.png") }
+            { TerrainType.Plains, Raylib.LoadTexture("assets/tiles/plains.png") },
+            { TerrainType.Water, Raylib.LoadTexture("assets/tiles/water.png") },
+            { TerrainType.Sand, Raylib.LoadTexture("assets/tiles/sand.png") },
         };
 
         Terrain = terrainDict.ToFrozenDictionary();
