@@ -11,4 +11,8 @@ public class Sprite(Texture2D texture, int x, int y)
     public void Draw() {
         Raylib.DrawTexture(texture, x, y, Color.White);
     }
+
+    public void Draw(Color tint) {
+        Raylib.DrawTexture(texture, x, y, tint);
+    }
 }
